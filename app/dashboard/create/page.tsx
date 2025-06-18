@@ -11,8 +11,8 @@ export default function CreateFlowPage() {
     if (editorRef.current) return // Prevent double init
     const editor = grapesjs.init({
       container: "#gjs",
-      height: "100vh",
-      width: "100vw",
+      height: "calc(100vh - 32px)",
+      width: "100%",
       fromElement: false,
       storageManager: false,
       panels: { defaults: [] },
@@ -108,6 +108,42 @@ export default function CreateFlowPage() {
         color: #fff !important;
         border: 1px solid #27272a !important;
       }
+      #gjs-blocks {
+        min-width: 220px;
+        max-width: 320px;
+        background: #111 !important;
+        border-right: 1px solid #27272a;
+        padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+        height: calc(100vh - 32px);
+        overflow-y: auto;
+        position: absolute;
+        left: 0;
+        top: 32px;
+        z-index: 20;
+      }
+      #gjs {
+        margin-left: 220px;
+        height: calc(100vh - 32px);
+        width: calc(100vw - 220px);
+        background: #000 !important;
+      }
+      @media (max-width: 900px) {
+        #gjs-blocks {
+          position: static;
+          min-width: 0;
+          max-width: none;
+          width: 100vw;
+          height: auto;
+          border-right: none;
+          border-bottom: 1px solid #27272a;
+          margin-left: 0;
+          padding-left: 0.5rem;
+        }
+        #gjs {
+          margin-left: 0;
+          width: 100vw;
+        }
+      }
     `
     document.head.appendChild(style)
     return () => {
@@ -118,8 +154,14 @@ export default function CreateFlowPage() {
 
   return (
     <div className="h-screen w-full bg-black text-white flex flex-col">
-      <div id="gjs-blocks" className="p-2 bg-black border-b border-gray-800" />
-      <div id="gjs" className="flex-1 h-full w-full" />
+      <div className="w-full flex items-center justify-between px-8 py-4 border-b border-gray-800 bg-black z-30" style={{height:32}}>
+        <h1 className="text-xl font-bold text-white">Create Flow</h1>
+        <span className="text-purple-400 text-sm">Powered by GrapesJS</span>
+      </div>
+      <div className="relative flex-1 flex overflow-hidden">
+        <div id="gjs-blocks" />
+        <div id="gjs" className="flex-1 h-full w-full" />
+      </div>
     </div>
   )
 }
