@@ -1,328 +1,164 @@
 "use client"
 
-import { motion } from "framer-motion"
 import { useState } from "react"
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
+import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import {
-  Type,
-  Square,
-  BoxIcon as ButtonIcon,
-  FileInputIcon as InputIcon,
-  Minus,
-  ImageIcon,
-  Save,
-  Eye,
-  Settings,
-  GripVertical,
-} from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useTheme } from "../layout"
+import { GripVertical } from "lucide-react"
 
-interface BlockItem {
-  id: string
-  type: string
-  content: string
-  config: Record<string, any>
-}
-
-const blockTypes = [
-  { id: "text", icon: Type, label: "Text Block", color: "blue" },
-  { id: "heading", icon: Type, label: "Heading", color: "purple" },
-  { id: "button", icon: ButtonIcon, label: "Button", color: "green" },
-  { id: "input", icon: InputIcon, label: "Input Field", color: "orange" },
-  { id: "divider", icon: Minus, label: "Divider", color: "gray" },
-  { id: "image", icon: ImageIcon, label: "Image", color: "pink" },
+const BLOCK_PALETTE = [
+  { id: "hero", label: "Hero Section" },
+  { id: "features", label: "Features" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "cta", label: "Call to Action" },
+  { id: "pricing", label: "Pricing" },
+  { id: "faq", label: "FAQ" },
 ]
 
-function SortableBlock({
-  block,
-  onSelect,
-  isSelected,
-}: { block: BlockItem; onSelect: (id: string) => void; isSelected: boolean }) {
-  const { theme } = useTheme()
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id })
+const BLOCK_PREVIEWS: Record<string, JSX.Element> = {
+  hero: (
+    <div className="p-4 text-center">
+      <div className="text-2xl font-bold mb-2">Hero Section</div>
+      <div className="text-gray-400">Big headline, subheadline, and CTA button</div>
+    </div>
+  ),
+  features: (
+    <div className="p-4">
+      <div className="font-semibold mb-2">Features</div>
+      <ul className="text-gray-400 list-disc ml-6">
+        <li>Feature 1</li>
+        <li>Feature 2</li>
+        <li>Feature 3</li>
+      </ul>
+    </div>
+  ),
+  testimonials: (
+    <div className="p-4">
+      <div className="font-semibold mb-2">Testimonials</div>
+      <div className="italic text-gray-400">"This product changed my life!"</div>
+    </div>
+  ),
+  cta: (
+    <div className="p-4 text-center">
+      <div className="font-semibold mb-2">Call to Action</div>
+      <Button className="bg-purple-600 text-white mt-2">Get Started</Button>
+    </div>
+  ),
+  pricing: (
+    <div className="p-4">
+      <div className="font-semibold mb-2">Pricing</div>
+      <div className="text-gray-400">$19/mo, $49/mo, $99/mo</div>
+    </div>
+  ),
+  faq: (
+    <div className="p-4">
+      <div className="font-semibold mb-2">FAQ</div>
+      <div className="text-gray-400">Q: Is this easy to use?<br/>A: Yes!</div>
+    </div>
+  ),
+}
 
+type Block = {
+  id: string
+  type: string
+}
+
+function SortableBlock({ block, index }: { block: Block; index: number }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
-
-  const renderBlockContent = () => {
-    switch (block.type) {
-      case "text":
-        return (
-          <p className={`${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>{block.content || "Text content"}</p>
-        )
-      case "heading":
-        return (
-          <h2 className={`text-xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-            {block.content || "Heading"}
-          </h2>
-        )
-      case "button":
-        return <Button className="bg-purple-600 hover:bg-purple-700 text-white">{block.content || "Button"}</Button>
-      case "input":
-        return (
-          <Input
-            placeholder={block.content || "Input placeholder"}
-            className={`${theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300"}`}
-          />
-        )
-      case "divider":
-        return <hr className={`border-t ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`} />
-      case "image":
-        return (
-          <div
-            className={`w-full h-32 ${theme === "dark" ? "bg-gray-800" : "bg-gray-200"} rounded-lg flex items-center justify-center`}
-          >
-            <ImageIcon className={`w-8 h-8 ${theme === "dark" ? "text-gray-600" : "text-gray-400"}`} />
-          </div>
-        )
-      default:
-        return <div>Unknown block</div>
-    }
-  }
-
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer ${
-        isSelected
-          ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-          : theme === "dark"
-            ? "border-gray-700 hover:border-gray-600 bg-gray-900"
-            : "border-gray-200 hover:border-gray-300 bg-white"
-      }`}
-      onClick={() => onSelect(block.id)}
+      className="relative bg-gray-900 border border-gray-700 rounded-lg mb-4 p-0 shadow group"
     >
       <div
         {...attributes}
         {...listeners}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+        className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
       >
-        <GripVertical className={`w-4 h-4 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`} />
+        <GripVertical className="w-4 h-4 text-gray-500" />
       </div>
-      <div className="ml-6">{renderBlockContent()}</div>
+      {BLOCK_PREVIEWS[block.type]}
     </div>
   )
 }
 
 export default function CreateFlowPage() {
-  const { theme } = useTheme()
-  const [flowTitle, setFlowTitle] = useState("Untitled Flow")
-  const [canvasBlocks, setCanvasBlocks] = useState<BlockItem[]>([])
-  const [selectedBlock, setSelectedBlock] = useState<string | null>(null)
+  const [blocks, setBlocks] = useState<Block[]>([])
+  const sensors = useSensors(useSensor(PointerSensor))
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  )
-
-  const addBlock = (type: string) => {
-    const newBlock: BlockItem = {
-      id: `${type}-${Date.now()}`,
-      type,
-      content: "",
-      config: {},
-    }
-    setCanvasBlocks([...canvasBlocks, newBlock])
+  // Drag from palette to canvas
+  const handlePaletteDragStart = (type: string) => {
+    const newBlock: Block = { id: `${type}-${Date.now()}`, type }
+    setBlocks((prev) => [...prev, newBlock])
   }
 
+  // Reorder inside canvas
   const handleDragEnd = (event: any) => {
     const { active, over } = event
-
-    if (active.id !== over.id) {
-      setCanvasBlocks((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id)
-        const newIndex = items.findIndex((item) => item.id === over.id)
-        return arrayMove(items, oldIndex, newIndex)
-      })
-    }
+    if (!over || active.id === over.id) return
+    setBlocks((items) => {
+      const oldIndex = items.findIndex((i) => i.id === active.id)
+      const newIndex = items.findIndex((i) => i.id === over.id)
+      return arrayMove(items, oldIndex, newIndex)
+    })
   }
 
-  const updateBlockContent = (id: string, content: string) => {
-    setCanvasBlocks((blocks) => blocks.map((block) => (block.id === id ? { ...block, content } : block)))
+  const handleSave = () => {
+    // For now, just log the structure
+    // In the future, send to Supabase
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(blocks, null, 2))
+    alert("Flow structure saved! (see console)")
   }
-
-  const selectedBlockData = canvasBlocks.find((block) => block.id === selectedBlock)
-
-  const cardClasses = theme === "dark" ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
 
   return (
-    <div className="h-screen flex">
-      {/* Left Panel - Blocks */}
-      <motion.div
-        initial={{ x: -300, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className={`w-64 ${cardClasses} border-r p-4 overflow-y-auto`}
-      >
-        <h3 className={`font-semibold mb-4 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Blocks</h3>
-        <div className="space-y-2">
-          {blockTypes.map((blockType) => (
-            <motion.button
-              key={blockType.id}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => addBlock(blockType.id)}
-              className={`w-full flex items-center space-x-3 p-3 rounded-lg border transition-colors ${
-                theme === "dark"
-                  ? "border-gray-700 hover:border-gray-600 hover:bg-gray-800"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-              }`}
+    <div className="flex flex-col md:flex-row h-full min-h-screen bg-black text-white">
+      {/* Sidebar Palette */}
+      <aside className="w-full md:w-64 bg-gray-950 border-r border-gray-800 p-4 flex-shrink-0">
+        <h2 className="text-lg font-bold mb-4 text-purple-400">Blocks</h2>
+        <div className="space-y-4">
+          {BLOCK_PALETTE.map((block) => (
+            <div
+              key={block.id}
+              className="bg-gray-900 border border-gray-700 rounded-lg p-4 cursor-pointer hover:border-purple-500 transition"
+              onClick={() => handlePaletteDragStart(block.id)}
             >
-              <div className={`p-2 rounded-lg bg-${blockType.color}-100 dark:bg-${blockType.color}-900/30`}>
-                <blockType.icon className={`w-4 h-4 text-${blockType.color}-600 dark:text-${blockType.color}-400`} />
-              </div>
-              <span className={`text-sm font-medium ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                {blockType.label}
-              </span>
-            </motion.button>
+              <div className="font-semibold text-white mb-1">{block.label}</div>
+              <div className="text-xs text-gray-400">Drag or click to add</div>
+            </div>
           ))}
         </div>
-      </motion.div>
+      </aside>
 
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Top Bar */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className={`flex items-center justify-between p-4 border-b ${theme === "dark" ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white"}`}
-        >
-          <div className="flex items-center space-x-4">
-            <Input
-              value={flowTitle}
-              onChange={(e) => setFlowTitle(e.target.value)}
-              className={`text-lg font-semibold border-none bg-transparent ${theme === "dark" ? "text-white" : "text-gray-900"}`}
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline">
-              <Eye className="w-4 h-4 mr-2" />
-              Preview
-            </Button>
-            <Button variant="outline">
-              <Save className="w-4 h-4 mr-2" />
-              Save Draft
-            </Button>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white">Publish</Button>
-          </div>
-        </motion.div>
-
-        {/* Center - Canvas */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-2xl mx-auto">
-            <div
-              className={`min-h-96 p-6 rounded-lg border-2 border-dashed ${
-                theme === "dark" ? "border-gray-700 bg-gray-900/50" : "border-gray-300 bg-gray-50"
-              }`}
-            >
-              {canvasBlocks.length === 0 ? (
-                <div className="text-center py-12">
-                  <div
-                    className={`w-16 h-16 rounded-full ${theme === "dark" ? "bg-gray-800" : "bg-gray-200"} flex items-center justify-center mx-auto mb-4`}
-                  >
-                    <Square className={`w-8 h-8 ${theme === "dark" ? "text-gray-600" : "text-gray-400"}`} />
-                  </div>
-                  <h3 className={`text-lg font-semibold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                    Start building your flow
-                  </h3>
-                  <p className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                    Drag blocks from the left panel to get started
-                  </p>
-                </div>
+      {/* Canvas Area */}
+      <main className="flex-1 flex flex-col items-center justify-start p-6 overflow-y-auto">
+        <h1 className="text-2xl font-bold mb-6 text-white">Create Flow</h1>
+        <div className="w-full max-w-xl min-h-[400px] bg-gray-950 border-2 border-purple-700 rounded-2xl p-6 flex flex-col">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+              {blocks.length === 0 ? (
+                <div className="text-gray-500 text-center py-20">Drag blocks here to build your onboarding flow</div>
               ) : (
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={canvasBlocks.map((block) => block.id)} strategy={verticalListSortingStrategy}>
-                    <div className="space-y-4">
-                      {canvasBlocks.map((block) => (
-                        <SortableBlock
-                          key={block.id}
-                          block={block}
-                          onSelect={setSelectedBlock}
-                          isSelected={selectedBlock === block.id}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
+                blocks.map((block, idx) => <SortableBlock key={block.id} block={block} index={idx} />)
               )}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Right Panel - Configuration */}
-      <motion.div
-        initial={{ x: 300, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        className={`w-64 ${cardClasses} border-l p-4 overflow-y-auto`}
-      >
-        <div className="flex items-center space-x-2 mb-4">
-          <Settings className={`w-5 h-5 ${theme === "dark" ? "text-white" : "text-gray-900"}`} />
-          <h3 className={`font-semibold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Properties</h3>
+            </SortableContext>
+          </DndContext>
         </div>
-
-        {selectedBlockData ? (
-          <div className="space-y-4">
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                Content
-              </label>
-              <Input
-                value={selectedBlockData.content}
-                onChange={(e) => updateBlockContent(selectedBlockData.id, e.target.value)}
-                placeholder="Enter content..."
-                className={`${theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300"}`}
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                Padding
-              </label>
-              <select
-                className={`w-full p-2 rounded-lg border ${theme === "dark" ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
-              >
-                <option>Small</option>
-                <option>Medium</option>
-                <option>Large</option>
-              </select>
-            </div>
-
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                Alignment
-              </label>
-              <select
-                className={`w-full p-2 rounded-lg border ${theme === "dark" ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
-              >
-                <option>Left</option>
-                <option>Center</option>
-                <option>Right</option>
-              </select>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <div
-              className={`w-12 h-12 rounded-full ${theme === "dark" ? "bg-gray-800" : "bg-gray-200"} flex items-center justify-center mx-auto mb-3`}
-            >
-              <Settings className={`w-6 h-6 ${theme === "dark" ? "text-gray-600" : "text-gray-400"}`} />
-            </div>
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-              Select a block to edit its properties
-            </p>
-          </div>
-        )}
-      </motion.div>
+        <Button
+          className="mt-8 bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow"
+          onClick={handleSave}
+        >
+          Save Flow
+        </Button>
+      </main>
     </div>
   )
 }

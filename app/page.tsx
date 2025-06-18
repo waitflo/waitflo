@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
+import Link from "next/link"
 
 export default function WaitfloSaaSLanding() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -231,9 +232,11 @@ export default function WaitfloSaaSLanding() {
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 px-6 py-2 text-sm font-medium shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300">
-                    Get Started
-                  </Button>
+                  <Link href="/signup" passHref>
+                    <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-0 px-6 py-2 text-sm font-medium shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300">
+                      Get Started
+                    </Button>
+                  </Link>
                 </motion.div>
 
                 {/* Mobile Menu Button */}
@@ -300,13 +303,15 @@ export default function WaitfloSaaSLanding() {
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-12 py-6 text-xl font-semibold rounded-xl shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 group"
-                  >
-                    Start for Free
-                    <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                  <Link href="/signup" passHref>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-12 py-6 text-xl font-semibold rounded-xl shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 group"
+                    >
+                      Start for Free
+                      <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </motion.div>
               </motion.div>
 

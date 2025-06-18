@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Star, User, Upload, ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -9,76 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
-
-// Sample template data
-const templates = [
-  {
-    id: 1,
-    name: "Startup Hero Page",
-    creator: "Alex Chen",
-    price: 9,
-    rating: 4.8,
-    sales: 234,
-    thumbnail: "/placeholder.svg?height=300&width=400",
-    tags: ["SaaS", "Modern", "Hero"],
-    description: "Perfect for tech startups and SaaS companies",
-  },
-  {
-    id: 2,
-    name: "E-commerce Landing",
-    creator: "Sarah Kim",
-    price: 12,
-    rating: 4.9,
-    sales: 189,
-    thumbnail: "/placeholder.svg?height=300&width=400",
-    tags: ["E-commerce", "Product", "Sales"],
-    description: "Optimized for product launches and sales",
-  },
-  {
-    id: 3,
-    name: "Agency Portfolio",
-    creator: "Mike Johnson",
-    price: 15,
-    rating: 4.7,
-    sales: 156,
-    thumbnail: "/placeholder.svg?height=300&width=400",
-    tags: ["Agency", "Portfolio", "Creative"],
-    description: "Showcase your agency's work beautifully",
-  },
-  {
-    id: 4,
-    name: "App Launch Page",
-    creator: "Emma Davis",
-    price: 8,
-    rating: 4.6,
-    sales: 298,
-    thumbnail: "/placeholder.svg?height=300&width=400",
-    tags: ["Mobile", "App", "Launch"],
-    description: "Perfect for mobile app launches",
-  },
-  {
-    id: 5,
-    name: "Course Landing",
-    creator: "David Wilson",
-    price: 10,
-    rating: 4.8,
-    sales: 167,
-    thumbnail: "/placeholder.svg?height=300&width=400",
-    tags: ["Education", "Course", "Learning"],
-    description: "Ideal for online courses and education",
-  },
-  {
-    id: 6,
-    name: "Event Registration",
-    creator: "Lisa Brown",
-    price: 7,
-    rating: 4.5,
-    sales: 203,
-    thumbnail: "/placeholder.svg?height=300&width=400",
-    tags: ["Event", "Registration", "Conference"],
-    description: "Great for events and conferences",
-  },
-]
 
 const sections = [
   { id: "hero", name: "Hero Section", description: "Main banner with headline and CTA" },
@@ -89,6 +19,9 @@ const sections = [
 ]
 
 export default function MarketplacePage() {
+  const [templates, setTemplates] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [customizeModal, setCustomizeModal] = useState(false)
   const [checkoutModal, setCheckoutModal] = useState(false)
@@ -101,6 +34,20 @@ export default function MarketplacePage() {
     generateAI: false,
     images: {},
   })
+
+  useEffect(() => {
+    setLoading(true)
+    fetch("/api/templates/public")
+      .then((res) => res.json())
+      .then((data) => {
+        setTemplates(data.templates || [])
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError("Failed to load templates.")
+        setLoading(false)
+      })
+  }, [])
 
   const handleCustomize = (template) => {
     setSelectedTemplate(template)
@@ -216,60 +163,59 @@ export default function MarketplacePage() {
             <p className="text-gray-300 text-lg">Professional templates designed by experts</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {templates.map((template, index) => (
-              <motion.div
-                key={template.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group"
-              >
-                <Card className="bg-gray-900/50 border-gray-800 hover:border-purple-500/50 transition-all duration-300 overflow-hidden">
-                  <div className="relative">
-                    <img
-                      src={template.thumbnail || "/placeholder.svg"}
-                      alt={template.name}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute top-4 right-4 bg-purple-600 text-white px-2 py-1 rounded text-sm font-medium">
-                      ${template.price}
-                    </div>
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-semibold">{template.name}</h3>
-                      <div className="flex items-center text-yellow-400">
-                        <Star className="h-4 w-4 fill-current" />
-                        <span className="ml-1 text-sm">{template.rating}</span>
+          {loading ? (
+            <div className="text-center text-gray-400 py-20 text-lg">Loading templates...</div>
+          ) : error ? (
+            <div className="text-center text-red-400 py-20 text-lg">{error}</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {templates.map((template, index) => {
+                const isNew = template.created_at && (Date.now() - new Date(template.created_at).getTime() < 7 * 24 * 60 * 60 * 1000)
+                return (
+                  <motion.div
+                    key={template.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="group"
+                  >
+                    <Card className="bg-gray-900/50 border-gray-800 hover:border-purple-500/50 transition-all duration-300 overflow-hidden">
+                      <div className="relative">
+                        <img
+                          src={template.preview_url || "/placeholder.svg"}
+                          alt={template.title}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-4 right-4 bg-purple-600 text-white px-2 py-1 rounded text-sm font-medium">
+                          ${template.price}
+                        </div>
+                        {isNew && (
+                          <div className="absolute top-4 left-4 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow">New</div>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex items-center text-gray-400 mb-3">
-                      <User className="h-4 w-4 mr-1" />
-                      <span className="text-sm">{template.creator}</span>
-                      <span className="mx-2">•</span>
-                      <span className="text-sm">{template.sales} sales</span>
-                    </div>
-                    <p className="text-gray-300 text-sm mb-4">{template.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {template.tags.map((tag) => (
-                        <span key={tag} className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded text-xs">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <Button
-                      onClick={() => handleCustomize(template)}
-                      className="w-full bg-white text-black hover:bg-gray-100 transition-colors"
-                    >
-                      Customize & Buy
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-xl font-semibold">{template.title}</h3>
+                        </div>
+                        <div className="flex items-center text-gray-400 mb-3">
+                          <User className="h-4 w-4 mr-1" />
+                          <span className="text-sm">{template.creator_name}</span>
+                        </div>
+                        {/* Optionally add more info here if needed */}
+                        <Button
+                          onClick={() => window.location.href = `/templates/customize?id=${template.id}`}
+                          className="w-full bg-white text-black hover:bg-gray-100 transition-colors"
+                        >
+                          Customize & Buy
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -299,7 +245,7 @@ export default function MarketplacePage() {
       <Dialog open={customizeModal} onOpenChange={setCustomizeModal}>
         <DialogContent className="bg-gray-900 border-gray-800 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Customize "{selectedTemplate?.name}"</DialogTitle>
+            <DialogTitle className="text-2xl font-bold">Customize "{selectedTemplate?.title}"</DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -464,7 +410,7 @@ export default function MarketplacePage() {
             <div className="bg-gray-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
               <div className="flex justify-between items-center mb-2">
-                <span>{selectedTemplate?.name}</span>
+                <span>{selectedTemplate?.title}</span>
                 <span>${selectedTemplate?.price}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
