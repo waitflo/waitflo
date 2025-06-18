@@ -83,7 +83,7 @@ export default function CreateFlowPage() {
       },
     })
     editorRef.current = editor
-    // Elementor-like white/purple theme
+    // Elementor-like white/purple theme, block panel fits full height
     const style = document.createElement("style")
     style.innerHTML = `
       body, #gjs, .gjs-cv-canvas, .gjs-blocks-cs {
@@ -115,25 +115,32 @@ export default function CreateFlowPage() {
         background: #fff !important;
         border-right: 2px solid #e9d5ff;
         padding: 1.5rem 1rem 1.5rem 2rem;
-        height: calc(100vh - 80px);
+        height: 100%;
         overflow-y: auto;
-        position: absolute;
+        position: sticky;
         left: 0;
-        top: 80px;
+        top: 0;
         z-index: 20;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
       }
       #gjs {
-        margin-left: 240px;
-        height: calc(100vh - 80px);
-        width: calc(100vw - 240px);
+        height: 100%;
+        width: 100%;
         max-width: 1200px;
         margin-right: auto;
-        margin-left: 240px;
+        margin-left: 0;
         background: #fff !important;
         border: 2px dashed #a78bfa !important;
         border-radius: 1rem;
         box-shadow: 0 0 0 1px #e9d5ff;
         transition: none !important;
+      }
+      .gjs-editor-cont {
+        display: flex;
+        height: 100%;
+        min-height: 600px;
       }
       @media (max-width: 1200px) {
         #gjs {
@@ -151,7 +158,7 @@ export default function CreateFlowPage() {
           border-bottom: 2px solid #e9d5ff;
           margin-left: 0;
           padding-left: 1rem;
-          top: 80px;
+          top: 0;
         }
         #gjs {
           margin-left: 0;
@@ -169,7 +176,7 @@ export default function CreateFlowPage() {
 
   return (
     <div className="h-[calc(100vh-80px)] w-full bg-white flex flex-col items-center justify-center">
-      <div className="relative flex-1 flex w-full max-w-7xl mx-auto overflow-hidden">
+      <div className="gjs-editor-cont relative flex-1 flex w-full max-w-7xl mx-auto overflow-hidden" style={{height: 'calc(100vh - 80px)'}}>
         <div id="gjs-blocks" />
         <div id="gjs" className="flex-1 h-full w-full" />
       </div>
