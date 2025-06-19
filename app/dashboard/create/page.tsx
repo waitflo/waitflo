@@ -1,7 +1,9 @@
 "use client"
-import StudioEditor from "@grapesjs/studio-sdk/react";
-import "@grapesjs/studio-sdk/style";
+import dynamic from "next/dynamic";
 import React from "react";
+
+const StudioEditor = dynamic(() => import("@grapesjs/studio-sdk/react"), { ssr: false, loading: () => <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><span style={{fontSize:24,color:'#888'}}>Loading editor...</span></div> });
+import "@grapesjs/studio-sdk/style";
 
 const tailwindBlocks = [
   // Layout
@@ -250,7 +252,7 @@ export default function CreateFlowPage() {
           }}
           onEditor={editor => {
             setEditorReady(true);
-            // Inject Tailwind CSS into the canvas
+            // Inject Tailwind CSS into the canvas only after editor is ready
             const doc = editor.Canvas.getDocument();
             const tailwindId = 'tailwind-cdn';
             if (!doc.getElementById(tailwindId)) {
@@ -264,19 +266,8 @@ export default function CreateFlowPage() {
             tailwindBlocks.forEach(block => {
               editor.Blocks.add(block.id, block);
             });
-            // Add a default asset for demonstration
-            editor.Assets.add({
-              src: 'https://placehold.co/600x400',
-              name: 'Placeholder Image',
-              type: 'image',
-            });
           }}
         />
-        {!editorReady && (
-          <div style={{ position: 'absolute', left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(247,248,250,0.7)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 24, color: '#888' }}>Loading editor...</span>
-          </div>
-        )}
       </div>
     </div>
   );
