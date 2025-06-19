@@ -2,9 +2,12 @@
 
 import React from "react"
 import ReactBricksApp from "../../../waitflo/components/ReactBricksApp"
+import { Editor } from "react-bricks"
 
 export default function CreateFlowPage() {
   return (
-    <ReactBricksApp>{/* Main React Bricks editor will render here */}</ReactBricksApp>
+    <ReactBricksApp>
+      <Editor />
+    </ReactBricksApp>
   )
 }
