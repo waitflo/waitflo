@@ -1,15 +1,11 @@
 "use client"
 
-export const dynamic = "force-dynamic";
+import dynamic from "next/dynamic";
 
-import React from "react"
-import ReactBricksApp from "../../../waitflo/components/ReactBricksApp"
-import { Editor } from "react-bricks"
+const CreateFlowEditor = dynamic(() => import("./CreateFlowEditor"), {
+  ssr: false,
+});
 
 export default function CreateFlowPage() {
-  return (
-    <ReactBricksApp>
-      <Editor />
-    </ReactBricksApp>
-  )
+  return <CreateFlowEditor />;
 }
