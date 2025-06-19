@@ -129,62 +129,67 @@ const tailwindBlocks = [
 
 export default function CreateFlowPage() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", margin: 0, padding: 0, boxSizing: "border-box" }}>
-      <div style={{ flex: 1, minHeight: 0, minWidth: 0 }}>
-        <StudioEditor
-          options={{
-            licenseKey: "72c0afb552204916b048eddf857fdb841e8a99399a50486e82f1170d9bb1dd31",
-            project: {
-              type: "web",
-              id: "UNIQUE_PROJECT_ID",
-            },
-            identity: {
-              id: "UNIQUE_END_USER_ID",
-            },
-            assets: {
-              storageType: "cloud",
-            },
-            storage: {
-              type: "cloud",
-              autosaveChanges: 100,
-              autosaveIntervalMs: 10000,
-            },
-            layout: {
-              default: {
-                type: "row",
-                style: { height: "100%" },
-                children: [
-                  {
-                    type: "panelBlocks",
-                    header: { label: "Blocks", collapsible: true, style: { width: "320px" } },
-                    symbols: true,
-                  },
-                  { type: "canvas" },
-                  {
-                    type: "panelProperties",
-                    header: { label: "Properties", collapsible: true, style: { width: "320px" } },
-                  },
-                ]
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", margin: 0, padding: 0, boxSizing: "border-box", fontFamily: 'Inter, Arial, sans-serif', background: '#f7f8fa' }}>
+      <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ width: '100%', height: '100%', maxWidth: '1800px', boxShadow: '0 2px 16px 0 rgba(0,0,0,0.04)', borderRadius: 12, background: '#fff', border: '1px solid #e5e7eb', overflow: 'hidden', display: 'flex' }}>
+          <StudioEditor
+            options={{
+              licenseKey: "72c0afb552204916b048eddf857fdb841e8a99399a50486e82f1170d9bb1dd31",
+              project: {
+                type: "web",
+                id: "UNIQUE_PROJECT_ID",
+              },
+              identity: {
+                id: "UNIQUE_END_USER_ID",
+              },
+              assets: {
+                storageType: "cloud",
+              },
+              storage: {
+                type: "cloud",
+                autosaveChanges: 100,
+                autosaveIntervalMs: 10000,
+              },
+              layout: {
+                default: {
+                  type: "row",
+                  style: { height: "100%" },
+                  children: [
+                    {
+                      type: "panelBlocks",
+                      header: { label: "Blocks", collapsible: true, style: { width: "360px" } },
+                      symbols: true,
+                    },
+                    {
+                      type: "canvas",
+                      style: { background: "#f7f8fa", borderRadius: 8, margin: 16, border: '1px solid #e5e7eb', minHeight: '80vh', boxShadow: '0 2px 8px 0 rgba(0,0,0,0.03)' }
+                    },
+                    {
+                      type: "panelProperties",
+                      header: { label: "Properties", collapsible: true, style: { width: "360px" } },
+                    },
+                  ]
+                }
+              },
+            }}
+            onEditor={editor => {
+              // Inject Tailwind CSS into the canvas
+              const doc = editor.Canvas.getDocument();
+              const tailwindId = 'tailwind-cdn';
+              if (!doc.getElementById(tailwindId)) {
+                const link = doc.createElement('link');
+                link.id = tailwindId;
+                link.rel = 'stylesheet';
+                link.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css';
+                doc.head.appendChild(link);
               }
-            },
-          }}
-          onEditor={editor => {
-            // Inject Tailwind CSS into the canvas
-            const doc = editor.Canvas.getDocument();
-            const tailwindId = 'tailwind-cdn';
-            if (!doc.getElementById(tailwindId)) {
-              const link = doc.createElement('link');
-              link.id = tailwindId;
-              link.rel = 'stylesheet';
-              link.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css';
-              doc.head.appendChild(link);
-            }
-            // Register Tailwind blocks
-            tailwindBlocks.forEach(block => {
-              editor.Blocks.add(block.id, block);
-            });
-          }}
-        />
+              // Register Tailwind blocks
+              tailwindBlocks.forEach(block => {
+                editor.Blocks.add(block.id, block);
+              });
+            }}
+          />
+        </div>
       </div>
     </div>
   );
