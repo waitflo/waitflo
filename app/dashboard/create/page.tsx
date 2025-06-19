@@ -1,6 +1,7 @@
 "use client"
 import StudioEditor from "@grapesjs/studio-sdk/react";
 import "@grapesjs/studio-sdk/style";
+import React from "react";
 
 const tailwindBlocks = [
   // Layout
@@ -187,9 +188,10 @@ const tailwindBlocks = [
 ];
 
 export default function CreateFlowPage() {
+  const [editorReady, setEditorReady] = React.useState(false);
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw", margin: 0, padding: 0, boxSizing: "border-box", fontFamily: 'Inter, Arial, sans-serif', background: '#f7f8fa' }}>
-      <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex' }}>
+      <div style={{ flex: 1, minHeight: 0, minWidth: 0, display: 'flex', overflow: 'hidden' }}>
         <StudioEditor
           options={{
             licenseKey: "72c0afb552204916b048eddf857fdb841e8a99399a50486e82f1170d9bb1dd31",
@@ -211,7 +213,7 @@ export default function CreateFlowPage() {
             layout: {
               default: {
                 type: "row",
-                style: { height: "100%" },
+                style: { height: "100%", minHeight: 0, minWidth: 0, overflow: 'hidden' },
                 children: [
                   {
                     type: "panelBlocks",
@@ -224,7 +226,19 @@ export default function CreateFlowPage() {
                   },
                   {
                     type: "canvas",
-                    style: { background: "#f7f8fa", borderRadius: 8, margin: 0, border: '1px solid #e5e7eb', minHeight: '100%', minWidth: 0, flex: 1, boxShadow: '0 2px 8px 0 rgba(0,0,0,0.03)' }
+                    style: {
+                      background: "#f7f8fa",
+                      borderRadius: 8,
+                      margin: 0,
+                      border: '1px solid #e5e7eb',
+                      minHeight: 0,
+                      minWidth: 0,
+                      flex: 1,
+                      boxShadow: '0 2px 8px 0 rgba(0,0,0,0.03)',
+                      overflow: 'auto',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }
                   },
                   {
                     type: "panelProperties",
@@ -235,6 +249,7 @@ export default function CreateFlowPage() {
             },
           }}
           onEditor={editor => {
+            setEditorReady(true);
             // Inject Tailwind CSS into the canvas
             const doc = editor.Canvas.getDocument();
             const tailwindId = 'tailwind-cdn';
@@ -257,6 +272,11 @@ export default function CreateFlowPage() {
             });
           }}
         />
+        {!editorReady && (
+          <div style={{ position: 'absolute', left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(247,248,250,0.7)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: 24, color: '#888' }}>Loading editor...</span>
+          </div>
+        )}
       </div>
     </div>
   );
