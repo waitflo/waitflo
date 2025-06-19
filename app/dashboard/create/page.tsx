@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useEffect } from "react"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import React, { useEffect, useState } from "react"
 import { Admin, Editor } from "react-bricks"
 
 const CreateFlowPage: React.FC = () => {
@@ -8,10 +9,14 @@ const CreateFlowPage: React.FC = () => {
     document.title = "Create Flow"
   }, [])
 
+  const [queryClient] = useState(() => new QueryClient())
+
   return (
-    <Admin>
-      <Editor />
-    </Admin>
+    <QueryClientProvider client={queryClient}>
+      <Admin>
+        <Editor />
+      </Admin>
+    </QueryClientProvider>
   )
 }
 
