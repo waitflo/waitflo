@@ -73,14 +73,22 @@ export default function CreateFlowPage() {
               autosaveChanges: 100,
               autosaveIntervalMs: 10000,
             },
-            blockManager: {
-              blocks: tailwindBlocks,
-            },
-            canvas: {
-              styles: [
-                "https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css"
-              ],
-            },
+          }}
+          onEditor={editor => {
+            // Inject Tailwind CSS into the canvas
+            const doc = editor.Canvas.getDocument();
+            const tailwindId = 'tailwind-cdn';
+            if (!doc.getElementById(tailwindId)) {
+              const link = doc.createElement('link');
+              link.id = tailwindId;
+              link.rel = 'stylesheet';
+              link.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css';
+              doc.head.appendChild(link);
+            }
+            // Register Tailwind blocks
+            tailwindBlocks.forEach(block => {
+              editor.Blocks.add(block.id, block);
+            });
           }}
         />
       </div>
