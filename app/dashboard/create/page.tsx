@@ -24,7 +24,6 @@ export default function CreateFlowPage() {
               autosaveChanges: 100,
               autosaveIntervalMs: 10000,
             },
-            layout: undefined,
           }}
         />
       </div>
