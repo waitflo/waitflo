@@ -29,107 +29,29 @@ export interface HeroUnitProps extends LayoutProps {
   badge: types.RepeaterItems
 }
 
-const HeroUnit: types.Brick<HeroUnitProps> = ({
-  backgroundColor,
-  backgroundImage,
-  borderTop,
-  borderBottom,
-  paddingTop,
-  paddingBottom,
-  size = 'large',
-  textGradient = gradients.NONE.value,
-  highlightTextColor = highlightTextColors.LIME.value,
-  title,
-  text,
-  buttons,
-  badge,
-}: HeroUnitProps) => {
-  const titleColor = textColors.GRAY_800
-  const textColor = textColors.GRAY_700
-  const titleStyle =
-    textGradient !== gradients.NONE.value
-      ? { WebkitTextFillColor: 'transparent' }
-      : {}
-
+const HeroUnit: types.Brick<HeroUnitProps> = () => {
   return (
-    <Section
-      backgroundColor={backgroundColor}
-      backgroundImage={backgroundImage}
-      borderTop={borderTop}
-      borderBottom={borderBottom}
-    >
-      <Container paddingTop={paddingTop} paddingBottom={paddingBottom}>
-        <div className="max-w-xl mx-auto px-5">
-          <Repeater
-            propName="badge"
-            items={badge}
-            renderWrapper={(items) => <div className="mb-4">{items}</div>}
-          />
-
-          <div className={titleColor} style={titleStyle}>
-            <RichText
-              propName="title"
-              value={title}
-              renderBlock={(props) => (
-                <h1
-                  className={classNames(
-                    'text-[28px] leading-8 sm:text-[40px] sm:leading-tight text-center font-extrabold mb-4 pb-1 bg-clip-text bg-linear-to-r',
-                    { 'lg:text-5xl lg:leading-snug': size === 'large' },
-                    titleColor,
-                    gradients[textGradient]?.className
-                  )}
-                  {...props.attributes}
-                >
-                  {props.children}
-                </h1>
-              )}
-              allowedFeatures={[types.RichTextFeatures.Highlight]}
-              placeholder="Type a title..."
-              renderHighlight={({ children }) => (
-                <span className={highlightTextColor.className}>{children}</span>
-              )}
-            />
+    <Section backgroundColor="bg-gradient-to-br from-[#0f1123] to-[#1a1037]">
+      <Container paddingTop="24" paddingBottom="24">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+          <div className="mb-2 text-xs font-semibold text-[#b6a6f7] tracking-widest flex items-center gap-2">
+            INTRODUCING FUSION <span className="border border-[#b6a6f7] rounded px-2 py-0.5 text-[10px] ml-2">BETA</span>
           </div>
-
-          <RichText
-            propName="text"
-            value={text}
-            renderBlock={(props) => (
-              <p
-                className={classNames(
-                  'text-base leading-6 sm:text-xl sm:leading-8 text-center',
-                  textColor
-                )}
-                {...props.attributes}
-              >
-                {props.children}
-              </p>
-            )}
-            placeholder="Type a text..."
-            allowedFeatures={[
-              types.RichTextFeatures.Bold,
-              types.RichTextFeatures.Link,
-            ]}
-            renderLink={(props) => (
-              <a
-                href={props.href}
-                target={props.target}
-                rel={props.rel}
-                className="text-sky-500 hover:text-sky-600 transition-colors"
-              >
-                {props.children}
-              </a>
-            )}
-          />
-          <Repeater
-            propName="buttons"
-            items={buttons}
-            renderWrapper={(items) => (
-              <div className="flex flex-row space-x-5 items-center justify-center mt-6">
-                {items}
-              </div>
-            )}
-          />
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white text-center mb-2 mt-2">What should we build?</h1>
+          <div className="text-lg md:text-xl font-medium text-[#b6b6c7] text-center mb-8">using your existing design & code context</div>
+          <div className="w-full max-w-2xl bg-[#18192a] rounded-lg shadow-lg p-0.5">
+            <div className="flex items-center px-4 py-2">
+              <input
+                className="flex-1 bg-transparent text-white placeholder-[#b6b6c7] border-none outline-none text-base py-3"
+                placeholder="Ask Fusion to build..."
+                type="text"
+              />
+              <button className="ml-2 px-3 py-1.5 bg-[#23244a] text-white rounded border border-[#23244a] hover:bg-[#2d2e5a] text-sm font-medium transition">+ Attach</button>
+              <button className="ml-2 p-2 rounded bg-[#b6a6f7] hover:bg-[#a18be6] transition">
+                <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M3.5 10h13m0 0l-5-5m5 5l-5 5" stroke="#18192a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
         </div>
       </Container>
     </Section>
