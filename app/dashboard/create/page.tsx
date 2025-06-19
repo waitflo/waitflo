@@ -156,8 +156,12 @@ export default function CreateFlowPage() {
                 children: [
                   {
                     type: "panelBlocks",
-                    header: { label: "Blocks", collapsible: true, style: { width: "360px" } },
+                    header: { label: "Blocks", collapsible: true, style: { width: "260px" } },
                     symbols: true,
+                  },
+                  {
+                    type: "panelAssets",
+                    header: { label: "Assets", collapsible: true, style: { width: "260px" } },
                   },
                   {
                     type: "canvas",
@@ -165,7 +169,7 @@ export default function CreateFlowPage() {
                   },
                   {
                     type: "panelProperties",
-                    header: { label: "Properties", collapsible: true, style: { width: "360px" } },
+                    header: { label: "Properties", collapsible: true, style: { width: "260px" } },
                   },
                 ]
               }
@@ -185,6 +189,12 @@ export default function CreateFlowPage() {
             // Register Tailwind blocks
             tailwindBlocks.forEach(block => {
               editor.Blocks.add(block.id, block);
+            });
+            // Add a default asset for demonstration
+            editor.Assets.add({
+              src: 'https://placehold.co/600x400',
+              name: 'Placeholder Image',
+              type: 'image',
             });
           }}
         />
