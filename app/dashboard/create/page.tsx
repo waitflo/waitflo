@@ -73,6 +73,24 @@ export default function CreateFlowPage() {
               autosaveChanges: 100,
               autosaveIntervalMs: 10000,
             },
+            layout: {
+              default: {
+                type: "row",
+                style: { height: "100%" },
+                children: [
+                  {
+                    type: "panelBlocks",
+                    header: { label: "Blocks", collapsible: true, style: { width: "300px" } },
+                    symbols: true,
+                  },
+                  { type: "canvas" },
+                  {
+                    type: "panelProperties",
+                    header: { label: "Properties", collapsible: true, style: { width: "300px" } },
+                  },
+                ]
+              }
+            },
           }}
           onEditor={editor => {
             // Inject Tailwind CSS into the canvas
