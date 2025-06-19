@@ -5,8 +5,8 @@ import React from 'react'
 import { register } from 'react-bricks/rsc'
 import { ReactBricks } from 'react-bricks/rsc/client'
 
-import NextLink from '@/react-bricks/NextLink'
-import config from '@/react-bricks/config'
+import NextLink from '../react-bricks/NextLink'
+import config from '../react-bricks/config'
 
 export default function ReactBricksApp({
   children,
