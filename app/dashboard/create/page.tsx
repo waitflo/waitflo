@@ -1,23 +1,21 @@
 "use client"
 
-import { Editor, Frame, Element, Canvas } from "@craftjs/core"
-import { Sidebar } from "./Sidebar"
-import { InspectorPanel } from "./InspectorPanel"
-import { Text, Button, Image, Header, Divider } from "./blocks"
+import dynamic from "next/dynamic"
+import { types } from "react-bricks"
+
+// Dynamically import Playground to avoid SSR issues
+const Playground = dynamic(() => import("react-bricks-ui").then(mod => mod.Playground), { ssr: false })
 
 export default function CreateFlowPage() {
   return (
-    <div className="h-screen w-full flex bg-black text-white overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar />
-      {/* Main Canvas - full width, edge-to-edge */}
-      <div className="flex-1 flex flex-col bg-white text-black relative min-w-0">
-        <Editor resolver={{ Text, Button, Image, Header, Divider }}>
-          <Frame>
-            <Canvas is={Element} canvas className="min-h-screen w-full mx-auto bg-white" />
-          </Frame>
-          <InspectorPanel />
-        </Editor>
+    <div className="h-screen w-full bg-white text-black">
+      {/* React Bricks Playground (visual editor) */}
+      <Playground
+        blocks={[]}
+        // You can add your custom bricks/blocks here
+      />
+      <div className="fixed bottom-4 right-4 bg-purple-100 text-purple-800 px-4 py-2 rounded shadow">
+        <b>Note:</b> For full React Bricks functionality, configure your credentials and custom blocks.
       </div>
     </div>
   )
