@@ -9,7 +9,6 @@
     "start": "next start"
   },
   "dependencies": {
-    "@craftjs/core": "^0.2.12",
     "@dnd-kit/core": "latest",
     "@dnd-kit/sortable": "latest",
     "@dnd-kit/utilities": "latest",
@@ -57,6 +56,8 @@
     "next-themes": "^0.4.4",
     "openai": "^5.5.1",
     "react": "^18",
+    "react-bricks": "^4.7.4",
+    "react-bricks-ui": "^0.5.3",
     "react-day-picker": "8.10.1",
     "react-dom": "^18",
     "react-hook-form": "^7.54.1",
