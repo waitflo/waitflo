@@ -25,6 +25,13 @@ const tailwindBlocks = [
     content: '<hr class="my-8 border-t border-gray-300"/>',
     category: "Layout",
   },
+  {
+    id: "tw-spacer",
+    label: "Spacer",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><rect x="4" y="10" width="16" height="4" fill="#bdbdbd"/></svg>',
+    content: '<div class="h-8"></div>',
+    category: "Layout",
+  },
   // Basic
   {
     id: "tw-heading",
@@ -56,11 +63,40 @@ const tailwindBlocks = [
     category: "Media",
   },
   {
+    id: "tw-gallery",
+    label: "Gallery",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><rect x="3" y="6" width="6" height="12" fill="#fff" stroke="#bdbdbd" stroke-width="2"/><rect x="10" y="6" width="6" height="12" fill="#fff" stroke="#bdbdbd" stroke-width="2"/><rect x="17" y="6" width="4" height="12" fill="#fff" stroke="#bdbdbd" stroke-width="2"/></svg>',
+    content: '<div class="grid grid-cols-3 gap-2"><img src="https://placehold.co/100x100" class="rounded"/><img src="https://placehold.co/100x100" class="rounded"/><img src="https://placehold.co/100x100" class="rounded"/></div>',
+    category: "Media",
+  },
+  {
     id: "tw-video",
     label: "Video",
     media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><polygon points="9,7 19,12 9,17" fill="#1976d2"/></svg>',
     content: '<div class="aspect-w-16 aspect-h-9"><iframe class="w-full h-full rounded" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe></div>',
     category: "Media",
+  },
+  // Interactive
+  {
+    id: "tw-tabs",
+    label: "Tabs",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><rect x="4" y="6" width="16" height="4" fill="#bdbdbd"/><rect x="4" y="14" width="16" height="4" fill="#bdbdbd"/></svg>',
+    content: `<div class="border-b border-gray-200 mb-4"><nav class="-mb-px flex"><a href="#" class="w-1/4 py-4 px-1 text-center border-b-2 border-blue-600 font-medium text-sm">Tab 1</a><a href="#" class="w-1/4 py-4 px-1 text-center border-b-2 border-transparent font-medium text-sm">Tab 2</a></nav></div><div class="p-4">Tab content here</div>`,
+    category: "Interactive",
+  },
+  {
+    id: "tw-accordion",
+    label: "Accordion",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><rect x="4" y="6" width="16" height="4" fill="#bdbdbd"/><rect x="4" y="14" width="16" height="4" fill="#bdbdbd"/></svg>',
+    content: `<div class="border rounded"><button class="w-full text-left px-4 py-2 font-semibold">Accordion Title</button><div class="px-4 py-2 border-t">Accordion content here</div></div>`,
+    category: "Interactive",
+  },
+  {
+    id: "tw-toggle",
+    label: "Toggle",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><circle cx="8" cy="12" r="4" fill="#bdbdbd"/><rect x="12" y="10" width="8" height="4" fill="#bdbdbd"/></svg>',
+    content: `<div class="flex items-center"><span class="mr-2">Toggle</span><input type="checkbox" class="toggle toggle-primary" /></div>`,
+    category: "Interactive",
   },
   // Buttons & Forms
   {
@@ -81,35 +117,58 @@ const tailwindBlocks = [
     </form>`,
     category: "Buttons & Forms",
   },
-  // Cards, Alerts, etc.
+  // Counters & Progress
   {
-    id: "tw-card",
-    label: "Card",
-    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><rect x="4" y="4" width="16" height="16" fill="#fff" stroke="#bdbdbd" stroke-width="2"/></svg>',
-    content: '<div class="bg-white rounded-lg shadow p-6"><h3 class="text-xl font-semibold mb-2">Card Title</h3><p class="text-gray-600">Card content goes here.</p></div>',
-    category: "Cards & Alerts",
+    id: "tw-counter",
+    label: "Counter",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><text x="8" y="18" font-size="14" fill="#757575">123</text></svg>',
+    content: '<div class="text-4xl font-bold text-blue-600">123</div>',
+    category: "Counters & Progress",
   },
   {
-    id: "tw-alert",
-    label: "Alert",
-    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#ffe082"/><text x="6" y="18" font-size="14" fill="#ff9800">!</text></svg>',
-    content: '<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert"><p class="font-bold">Alert</p><p>Something went wrong!</p></div>',
-    category: "Cards & Alerts",
+    id: "tw-progress",
+    label: "Progress Bar",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><rect x="4" y="10" width="16" height="4" fill="#90caf9"/></svg>',
+    content: '<div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-blue-600 h-2.5 rounded-full" style="width: 60%"></div></div>',
+    category: "Counters & Progress",
   },
-  // Icons, Maps, Testimonials, Pricing, etc.
+  // Social & Icons
+  {
+    id: "tw-social-icons",
+    label: "Social Icons",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="6" cy="12" r="3" fill="#1976d2"/><circle cx="12" cy="12" r="3" fill="#90caf9"/><circle cx="18" cy="12" r="3" fill="#bdbdbd"/></svg>',
+    content: '<div class="flex space-x-4"><a href="#" class="text-blue-600"><svg width="24" height="24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg></a><a href="#" class="text-blue-400"><svg width="24" height="24" fill="currentColor"><rect x="4" y="4" width="16" height="16"/></svg></a></div>',
+    category: "Social & Icons",
+  },
   {
     id: "tw-icon",
     label: "Icon",
     media: '<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffd600"/></svg>',
     content: '<span class="text-4xl">⭐</span>',
-    category: "Media",
+    category: "Social & Icons",
   },
+  // Alerts & Misc
+  {
+    id: "tw-alert",
+    label: "Alert",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#ffe082"/><text x="6" y="18" font-size="14" fill="#ff9800">!</text></svg>',
+    content: '<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert"><p class="font-bold">Alert</p><p>Something went wrong!</p></div>',
+    category: "Alerts & Misc",
+  },
+  {
+    id: "tw-html",
+    label: "HTML",
+    media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><text x="6" y="18" font-size="14" fill="#757575">&lt;/&gt;</text></svg>',
+    content: '<div><code>&lt;strong&gt;Custom HTML here&lt;/strong&gt;</code></div>',
+    category: "Alerts & Misc",
+  },
+  // Maps
   {
     id: "tw-map",
     label: "Map",
     media: '<svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" fill="#e0e0e0"/><circle cx="12" cy="12" r="6" fill="#81c784"/></svg>',
     content: '<iframe src="https://maps.google.com/maps?q=New+York&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="250" frameborder="0" class="rounded" style="border:0;"></iframe>',
-    category: "Media",
+    category: "Maps",
   },
   {
     id: "tw-testimonial",
