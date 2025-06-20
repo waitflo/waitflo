@@ -22,7 +22,14 @@ CREATE TABLE IF NOT EXISTS templates (
     price DECIMAL(10,2) NOT NULL DEFAULT 0,
     usage_count INTEGER NOT NULL DEFAULT 0,
     is_public BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    jsx_code TEXT,
+    type TEXT, -- 'waitlist' or 'onboarding'
+    logo_url TEXT,
+    primary_color TEXT,
+    questions JSONB,
+    vercel_url TEXT,
+    is_listed BOOLEAN DEFAULT false
 );
 
 -- Flows table (AI-generated flows)
@@ -150,4 +157,14 @@ CREATE TRIGGER on_auth_user_created
 
 -- INSERT INTO templates (title, preview_url, creator_id, price, is_public) VALUES
 --     ('E-commerce Flow', 'https://example.com/preview1.jpg', '550e8400-e29b-41d4-a716-446655440001', 29.99, true),
---     ('SaaS Onboarding', 'https://example.com/preview2.jpg', '550e8400-e29b-41d4-a716-446655440001', 19.99, true); 
+--     ('SaaS Onboarding', 'https://example.com/preview2.jpg', '550e8400-e29b-41d4-a716-446655440001', 19.99, true);
+
+-- Migration: Add fields for AI-powered template publishing
+ALTER TABLE templates
+  ADD COLUMN IF NOT EXISTS jsx_code TEXT,
+  ADD COLUMN IF NOT EXISTS type TEXT, -- 'waitlist' or 'onboarding'
+  ADD COLUMN IF NOT EXISTS logo_url TEXT,
+  ADD COLUMN IF NOT EXISTS primary_color TEXT,
+  ADD COLUMN IF NOT EXISTS questions JSONB,
+  ADD COLUMN IF NOT EXISTS vercel_url TEXT,
+  ADD COLUMN IF NOT EXISTS is_listed BOOLEAN DEFAULT false; 

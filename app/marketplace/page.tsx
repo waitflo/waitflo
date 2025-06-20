@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Star, User, Upload, ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
+import { supabase } from "@/lib/supabase"
+import { LiveProvider, LivePreview } from "react-live"
+import { toast } from "sonner"
 
 const sections = [
   { id: "hero", name: "Hero Section", description: "Main banner with headline and CTA" },
@@ -19,9 +22,9 @@ const sections = [
 ]
 
 export default function MarketplacePage() {
-  const [templates, setTemplates] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [templates, setTemplates] = useState<any[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [customizeModal, setCustomizeModal] = useState(false)
   const [checkoutModal, setCheckoutModal] = useState(false)
@@ -34,22 +37,32 @@ export default function MarketplacePage() {
     generateAI: false,
     images: {},
   })
+  const [search, setSearch] = useState("")
+  const [typeFilter, setTypeFilter] = useState("")
+  const [colorFilter, setColorFilter] = useState("")
+  const [cloningId, setCloningId] = useState<string | null>(null)
 
   useEffect(() => {
-    setLoading(true)
-    fetch("/api/templates/public")
-      .then((res) => res.json())
-      .then((data) => {
-        setTemplates(data.templates || [])
+    const fetchTemplates = async () => {
+      setLoading(true)
+      setError(null)
+      const { data, error } = await supabase
+        .from("templates")
+        .select("*")
+        .eq("is_listed", true)
+        .order("created_at", { ascending: false })
+      if (error) {
+        setError("Failed to load marketplace templates.")
         setLoading(false)
-      })
-      .catch((err) => {
-        setError("Failed to load templates.")
-        setLoading(false)
-      })
+        return
+      }
+      setTemplates(data || [])
+      setLoading(false)
+    }
+    fetchTemplates()
   }, [])
 
-  const handleCustomize = (template) => {
+  const handleCustomize = (template: any) => {
     setSelectedTemplate(template)
     setCustomizeModal(true)
   }
@@ -59,7 +72,7 @@ export default function MarketplacePage() {
     setCheckoutModal(true)
   }
 
-  const handleSectionToggle = (sectionId) => {
+  const handleSectionToggle = (sectionId: string) => {
     setFormData((prev) => ({
       ...prev,
       selectedSections: prev.selectedSections.includes(sectionId)
@@ -67,6 +80,56 @@ export default function MarketplacePage() {
         : [...prev.selectedSections, sectionId],
     }))
   }
+
+  const handleClone = async (tpl: any) => {
+    setCloningId(tpl.id)
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in to clone templates.")
+        setCloningId(null)
+        return
+      }
+      const creator_id = user.id
+      // Generate a new slug
+      const slug = `cloned-template-${Date.now()}`
+      // Insert cloned template
+      const { error } = await supabase.from('templates').insert([
+        {
+          title: tpl.title + " (Clone)",
+          jsx_code: tpl.jsx_code,
+          type: tpl.type,
+          logo_url: tpl.logo_url,
+          primary_color: tpl.primary_color,
+          questions: tpl.questions,
+          creator_id,
+          vercel_url: `https://${slug}.vercel.app`,
+          is_listed: false,
+          usage_count: (tpl.usage_count || 0) + 1,
+        },
+      ])
+      if (error) throw error
+      // Increment usage_count on original template
+      await supabase.from('templates').update({ usage_count: (tpl.usage_count || 0) + 1 }).eq('id', tpl.id)
+      toast.success("Template cloned! Find it in your templates.")
+      window.location.href = "/dashboard/templates"
+    } catch (err) {
+      toast.error("Failed to clone template.")
+    } finally {
+      setCloningId(null)
+    }
+  }
+
+  const filteredTemplates = templates.filter((tpl: any) => {
+    const matchesSearch = tpl.title.toLowerCase().includes(search.toLowerCase())
+    const matchesType = !typeFilter || tpl.type === typeFilter
+    const matchesColor = !colorFilter || tpl.primary_color === colorFilter
+    return matchesSearch && matchesType && matchesColor
+  })
+
+  if (loading) return <div className="p-8 text-center">Loading...</div>
+  if (error) return <div className="p-8 text-center text-red-500">{error}</div>
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -163,59 +226,81 @@ export default function MarketplacePage() {
             <p className="text-gray-300 text-lg">Professional templates designed by experts</p>
           </motion.div>
 
-          {loading ? (
-            <div className="text-center text-gray-400 py-20 text-lg">Loading templates...</div>
-          ) : error ? (
-            <div className="text-center text-red-400 py-20 text-lg">{error}</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {templates.map((template, index) => {
-                const isNew = template.created_at && (Date.now() - new Date(template.created_at).getTime() < 7 * 24 * 60 * 60 * 1000)
-                return (
-                  <motion.div
-                    key={template.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="group"
-                  >
-                    <Card className="bg-gray-900/50 border-gray-800 hover:border-purple-500/50 transition-all duration-300 overflow-hidden">
-                      <div className="relative">
-                        <img
-                          src={template.preview_url || "/placeholder.svg"}
-                          alt={template.title}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div className="absolute top-4 right-4 bg-purple-600 text-white px-2 py-1 rounded text-sm font-medium">
-                          ${template.price}
-                        </div>
-                        {isNew && (
-                          <div className="absolute top-4 left-4 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold shadow">New</div>
-                        )}
-                      </div>
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-xl font-semibold">{template.title}</h3>
-                        </div>
-                        <div className="flex items-center text-gray-400 mb-3">
-                          <User className="h-4 w-4 mr-1" />
-                          <span className="text-sm">{template.creator_name}</span>
-                        </div>
-                        {/* Optionally add more info here if needed */}
-                        <Button
-                          onClick={() => window.location.href = `/templates/customize?id=${template.id}`}
-                          className="w-full bg-white text-black hover:bg-gray-100 transition-colors"
-                        >
-                          Customize & Buy
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )
-              })}
+          <div className="max-w-6xl mx-auto py-10 px-4">
+            <h1 className="text-3xl font-bold mb-6">Marketplace</h1>
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <Input
+                placeholder="Search by title..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="md:w-1/3"
+              />
+              <select
+                value={typeFilter}
+                onChange={e => setTypeFilter(e.target.value)}
+                className="border rounded px-3 py-2 md:w-1/4 dark:bg-gray-800"
+              >
+                <option value="">All Types</option>
+                <option value="waitlist">Waitlist</option>
+                <option value="onboarding">Onboarding</option>
+              </select>
+              <select
+                value={colorFilter}
+                onChange={e => setColorFilter(e.target.value)}
+                className="border rounded px-3 py-2 md:w-1/4 dark:bg-gray-800"
+              >
+                <option value="">All Colors</option>
+                <option value="purple">Purple</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+                <option value="pink">Pink</option>
+                <option value="orange">Orange</option>
+                <option value="gray">Gray</option>
+              </select>
             </div>
-          )}
+            {filteredTemplates.length === 0 ? (
+              <div className="text-center text-gray-500">No templates match your filters.</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {filteredTemplates.map((tpl: any) => (
+                  <div
+                    key={tpl.id}
+                    className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg border border-gray-200 dark:border-gray-800"
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      {tpl.logo_url && <img src={tpl.logo_url} alt="Logo" className="h-12 rounded" />}
+                      <div>
+                        <div className="font-medium text-lg">{tpl.title}</div>
+                        <div className="text-sm text-gray-500">Primary Color: {tpl.primary_color}</div>
+                        <div className="text-xs text-gray-400">Type: {tpl.type}</div>
+                        <div className="text-xs text-gray-400">Usage: {tpl.usage_count || 0}</div>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <LiveProvider code={tpl.jsx_code} scope={{ Card, CardContent, Button, Input }}>
+                        <LivePreview />
+                      </LiveProvider>
+                    </div>
+                    <div className="flex gap-2 mt-auto flex-wrap">
+                      <a href={tpl.vercel_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline">Open Live</Button>
+                      </a>
+                      <a href={`/dashboard/templates/${tpl.vercel_url?.split(".")[0].replace("https://", "")}`}>
+                        <Button>View Details</Button>
+                      </a>
+                      <Button
+                        variant="secondary"
+                        onClick={() => handleClone(tpl)}
+                        disabled={cloningId === tpl.id}
+                      >
+                        {cloningId === tpl.id ? "Cloning..." : "Clone"}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

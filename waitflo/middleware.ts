@@ -7,6 +7,20 @@ export function middleware(request: NextRequest) {
   // Check if there is any supported locale in the pathname
   const pathname = request.nextUrl.pathname
 
+  // Auth protection for dashboard (but not admin)
+  if (
+    pathname.startsWith('/dashboard') &&
+    !pathname.startsWith('/dashboard/login') &&
+    !pathname.startsWith('/admin')
+  ) {
+    // Example: check for a session cookie (adjust name as needed)
+    const token = request.cookies.get('sb-access-token')?.value
+    if (!token) {
+      // Not logged in, redirect to login
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+  }
+
   // Check if the default locale is in the pathname
   if (
     pathname.startsWith(`/${i18n.defaultLocale}/`) ||
