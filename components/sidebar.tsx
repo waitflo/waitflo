@@ -13,7 +13,6 @@ const sidebarItems = [
   { icon: FileText, label: "My Flows", href: "/dashboard/flows" },
   { icon: LayoutTemplate, label: "Templates", href: "/dashboard/templates" },
   { icon: FileText, label: "My Templates", href: "/dashboard/my-templates" },
-  { icon: Plus, label: "Create Flow", href: "/dashboard/create" },
   { icon: Sparkles, label: "AI Generator", href: "/dashboard/ai" },
   { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
   { icon: Users, label: "Affiliates", href: "/dashboard/affiliates" },
