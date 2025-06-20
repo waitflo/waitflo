@@ -121,93 +121,6 @@ export default function DashboardHome() {
         </Link>
       </motion.div>
 
-      {/* Revenue Section */}
-      <motion.div variants={fadeInUp}>
-        <Card
-          className={`${cardClasses} transition-all duration-300 border-2 border-purple-200 dark:border-purple-800`}
-        >
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-4">
-                  <DollarSign className="w-6 h-6 text-purple-600" />
-                  <h2 className={`text-xl font-semibold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                    Total Revenue Earned
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="text-center md:text-left">
-                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>Total Earnings</p>
-                    <p
-                      className={`text-2xl lg:text-3xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}
-                    >
-                      ${totalRevenue.toFixed(2)}
-                    </p>
-                  </div>
-
-                  <div className="text-center md:text-left">
-                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>From Affiliates</p>
-                    <p className={`text-xl font-semibold text-green-600`}>${affiliateRevenue.toFixed(2)}</p>
-                    <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-500"}`}>
-                      {((affiliateRevenue / totalRevenue) * 100).toFixed(1)}% of total
-                    </p>
-                  </div>
-
-                  <div className="text-center md:text-left">
-                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>From Templates</p>
-                    <p className={`text-xl font-semibold text-blue-600`}>${templateRevenue.toFixed(2)}</p>
-                    <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-500"}`}>
-                      {((templateRevenue / totalRevenue) * 100).toFixed(1)}% of total
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
-                  <span className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                    Last payout: {lastPayout}
-                  </span>
-                  <span className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>•</span>
-                  <span className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                    Minimum payout: ${minimumPayout}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col space-y-3">
-                <Button
-                  onClick={() => setShowPayoutModal(true)}
-                  disabled={totalRevenue < minimumPayout}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3"
-                >
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Request Payout
-                </Button>
-
-                {totalRevenue < minimumPayout && (
-                  <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-500"} text-center`}>
-                    ${(minimumPayout - totalRevenue).toFixed(2)} more needed
-                  </p>
-                )}
-
-                <div className="flex space-x-2">
-                  <Link href="/dashboard/affiliates">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      View Affiliates
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/my-templates">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      View Templates
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
       {/* Stats Cards */}
       <motion.div variants={fadeInUp}>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -397,6 +310,93 @@ export default function DashboardHome() {
             </motion.div>
           </a>
         </div>
+      </motion.div>
+
+      {/* Total Revenue Earned (moved to bottom) */}
+      <motion.div variants={fadeInUp}>
+        <Card
+          className={`${cardClasses} transition-all duration-300 border-2 border-purple-200 dark:border-purple-800`}
+        >
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center space-x-2 mb-4">
+                  <DollarSign className="w-6 h-6 text-purple-600" />
+                  <h2 className={`text-xl font-semibold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                    Total Revenue Earned
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="text-center md:text-left">
+                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>Total Earnings</p>
+                    <p
+                      className={`text-2xl lg:text-3xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                    >
+                      ${totalRevenue.toFixed(2)}
+                    </p>
+                  </div>
+
+                  <div className="text-center md:text-left">
+                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>From Affiliates</p>
+                    <p className={`text-xl font-semibold text-green-600`}>${affiliateRevenue.toFixed(2)}</p>
+                    <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-500"}`}>
+                      {((affiliateRevenue / totalRevenue) * 100).toFixed(1)}% of total
+                    </p>
+                  </div>
+
+                  <div className="text-center md:text-left">
+                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>From Templates</p>
+                    <p className={`text-xl font-semibold text-blue-600`}>${templateRevenue.toFixed(2)}</p>
+                    <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-500"}`}>
+                      {((templateRevenue / totalRevenue) * 100).toFixed(1)}% of total
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
+                  <span className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                    Last payout: {lastPayout}
+                  </span>
+                  <span className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>•</span>
+                  <span className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                    Minimum payout: ${minimumPayout}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-3">
+                <Button
+                  onClick={() => setShowPayoutModal(true)}
+                  disabled={totalRevenue < minimumPayout}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3"
+                >
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Request Payout
+                </Button>
+
+                {totalRevenue < minimumPayout && (
+                  <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-500"} text-center`}>
+                    ${(minimumPayout - totalRevenue).toFixed(2)} more needed
+                  </p>
+                )}
+
+                <div className="flex space-x-2">
+                  <Link href="/dashboard/affiliates">
+                    <Button variant="outline" size="sm" className="text-xs">
+                      View Affiliates
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/my-templates">
+                    <Button variant="outline" size="sm" className="text-xs">
+                      View Templates
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* Payout Modal */}
