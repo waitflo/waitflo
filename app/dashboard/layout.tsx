@@ -82,7 +82,7 @@ export default function DashboardLayout({
 
               {/* Center - Navigation */}
               <nav className="hidden md:flex items-center space-x-8">
-                {["Dashboard", "Templates", "Create", "AI", "Analytics"].map((item) => (
+                {["Dashboard", "Templates", "AI", "Analytics"].map((item) => (
                   <Link
                     key={item}
                     href={`/dashboard${item === "Dashboard" ? "" : `/${item.toLowerCase()}`}`}
